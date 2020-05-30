@@ -26,6 +26,9 @@ mongoose.connect(URL, {useNewUrlParser : true},(err) => {
 const RoomRoute = require('./routes/roomroute');
 app.use('/room', RoomRoute);
 
+const ReceipeRoute = require('./routes/receiperoute');
+app.use('/receipe', ReceipeRoute);
+
 app.listen(PORT, () => {
     console.log('Server Started on PORT ' + PORT)
 })
