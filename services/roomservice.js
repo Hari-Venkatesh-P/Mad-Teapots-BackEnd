@@ -195,8 +195,12 @@ async function getAllRoomsBasedonRoomType(req,res){
 async function getGuestDetails(req,res){
     console.log("Api hit to getGuestDetails method")
     try{
+        console.log(req.params.roomid)
+        console.log(req.params.checkindate)
+        console.log(req.params.name)
           await RoomLedger.findOne({roomId:req.params.roomid,checkInDate : req.params.checkindate,firstName : req.params.name}, function (err, roomledger){
-              if(!roomledger){
+            console.log(roomledger)  
+            if(!roomledger){
                 res.status(201).json({
                     success:false,
                     message:"Unable to fetch room details"

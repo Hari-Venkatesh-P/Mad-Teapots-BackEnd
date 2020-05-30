@@ -15,8 +15,8 @@ function addReceipe(req,res){
                 receipe = new Receipe({
                     receipeName : req.body.receipeName,
                     receipeOfferQuantity : req.body.receipeOfferQuantity,
-                    receipeAvailablity : req.body.receipeAvailablity,
-                    receipePrice : req.body.receipePrice,
+                    receipeAvailablity : true,
+                    receipePrice : parseInt(req.body.receipePrice),
                 })
                 receipe.save((err,docs=>{
                     if(err){
@@ -91,7 +91,7 @@ function getAllTable(req,res){
               })
             }else{
                 res.status(200).json({
-                    success:false,
+                    success:true,
                     message:guestbill
                 })
             }
@@ -359,6 +359,57 @@ function payBill(req,res){
     }
 }  
 
+
+function getAllReceipe(req,res){
+    console.log("API hit to get all receipe method")
+    try{
+        Receipe.find(function (err, receipe){
+            if(!receipe){
+              res.status(201).json({
+                  success:false,
+                  message:"No Receipes"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:receipe
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
+
+function deleteReceipe(req,res){
+    console.log("API hit to delete receipe method")
+    try{
+        Receipe.findOneAndRemove({_id:req.body._id},function (err, receipe){
+            console.log(receipe)
+            if(err){
+              res.status(201).json({
+                  success:false,
+                  message:"No Receipes"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:"Receipe deleted successfully"
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
 module.exports = {
     addReceipe,
     addReceipeToBill,
@@ -368,4 +419,6 @@ module.exports = {
     receipeAvailablityToogle,
     registerGuest,
     payBill,
+    getAllReceipe,
+    deleteReceipe,
 }

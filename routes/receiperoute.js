@@ -10,5 +10,7 @@ router.get("/gettablebyid",ReceipeService.getTableById)
 router.post("/receipeavailablitytoggle",ReceipeService.receipeAvailablityToogle)
 router.post("/registerguest",ReceipeService.registerGuest)
 router.post("/paybill",ReceipeService.payBill)
+router.get("/getallreceipe",ReceipeService.getAllReceipe)
+router.post("/deletereceipebyid",ReceipeService.deleteReceipe)
 
 module.exports = router;
