@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const OrderItemsSchema = mongoose.Schema({
   receipeName: {
     type: String,
-    unique : true
+    default : '',
   },
   receipeCount:{
     type: Number,
@@ -16,6 +16,10 @@ const OrderItemsSchema = mongoose.Schema({
 })
 
 const BillLedgerSchema = mongoose.Schema({
+    ledgerid : {
+      type : Number,
+      default : 0
+    },
     tableNumber : {
         type: String,
     },
@@ -24,8 +28,7 @@ const BillLedgerSchema = mongoose.Schema({
       default : "",
     },
     orderItems : {
-     type :  [OrderItemsSchema],
-     default : [],
+     type :  [OrderItemsSchema]
     },  
     billAmount : {
      type : Number,

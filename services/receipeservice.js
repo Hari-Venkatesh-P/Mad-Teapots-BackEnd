@@ -18,7 +18,7 @@ function addReceipe(req,res){
                     receipeAvailablity : true,
                     receipePrice : parseInt(req.body.receipePrice),
                 })
-                receipe.save((err,docs=>{
+                receipe.save((err,docs)=>{
                     if(err){
                         res.status(201).send({
                             success: false,
@@ -30,7 +30,7 @@ function addReceipe(req,res){
                             message: 'Receipe saved successfully.'
                         })
                     }
-                }))
+                })
             }
         })
     }catch(error){
@@ -55,7 +55,7 @@ function addTable(req,res){
                     class : req.body.class,
                     tableNumber : req.body.tableNumber,
                 })
-                guestBill.save((err,docs=>{
+                guestBill.save((err,docs)=>{
                     if(err){
                         res.status(201).send({
                             success: false,
@@ -68,7 +68,7 @@ function addTable(req,res){
                             message: 'Default table Created Succeessfully.'
                         })
                     }
-                }))
+                })
             }
         })
     }catch(error){
@@ -107,7 +107,7 @@ function getAllTable(req,res){
 function getTableById(req,res){
     console.log("API hit to find table by id method")
     try{
-        GuestBill.findOne({_id : req.body._id},function (err, guestbill){
+        GuestBill.findOne({_id : req.params._id},function (err, guestbill){
             if(!guestbill){
               res.status(201).json({
                   success:false,
@@ -115,7 +115,7 @@ function getTableById(req,res){
               })
             }else{
                 res.status(200).json({
-                    success:false,
+                    success:true,
                     message:guestbill
                 })
             }
@@ -232,11 +232,31 @@ function receipeAvailablityToogle(req,res){
     }
 }
 
+async function getMaxLedgerId(req,res){
+   await  BillLedger.find({},(err,ledgers)=>{
+        if (ledgers.length==0) {
+            id = 1
+        } else {
+            maxid = ledgers[0].ledgerid
+            for(i=0;i<ledgers.length;i++){
+                if(parseInt(ledgers[i].ledgerid)>maxid){
+                    maxid = parseInt(ledgers[i].ledgerid)
+                }
+            }
+        id = maxid+1
+        }
+    })
+    console.log(id)
+    res.json({
+        id:id
+    })
+}
+
 function registerGuest(req,res){
     console.log("API hit to register guest method")
     try{
-        GuestBill.findOne({class : req.body.class , userName: '' },function (err, table){
-            console.log(table)
+        var id = 0
+         GuestBill.findOne({class : req.body.class , userName: '' },function (err, table){
             if(!table || err){
               res.status(201).json({
                   success:false,
@@ -244,7 +264,7 @@ function registerGuest(req,res){
               })
             }else{
                 table.userName = req.body.userName
-                table.save((err,savedtables=>{
+                table.save(async (err,savedtables) =>{
                     if(!err){
                         var today = new Date();
                         var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
@@ -255,13 +275,13 @@ function registerGuest(req,res){
                             class :  req.body.class,
                             date : date,
                             starttime : starttime,
-                            status : 'Pending'
+                            status : 'Pending',
                          })
-                         billledger.save((err,ledger)=>{
+                         await billledger.save((err,ledger)=>{
                              if(!err){
                                 res.status(200).json({
                                     success:true,
-                                    tableNumber : table.tableNumber,
+                                    tableNumber : table._id,
                                     message:"Table Successfully registered for the Guest with Ledger Entry"
                                 })
                              }else{
@@ -278,7 +298,7 @@ function registerGuest(req,res){
                             message:"Cannot Register the table  to the Guest"
                         })
                     }
-                }))
+                })
             }
         })
     }catch(error){
@@ -293,9 +313,7 @@ function payBill(req,res){
     console.log("API hit to pay bill method")
     try{
         GuestBill.findOne({_id : req.body._id },function (err, table){
-            console.log(table)
             temptable  = table
-            console.log(temptable)
             if(!table || err){
               res.status(201).json({
                   success:false,
@@ -311,11 +329,7 @@ function payBill(req,res){
                         if(!err){
                             var today = new Date();
                             var endtime = today.getHours()+':'+today.getMinutes()+":"+today.getSeconds();
-                            console.log(temptable.tableNumber)
-                            console.log(temptable.class)
-                            console.log(temptable.userName)
-                            BillLedger.findOne({tableNumber : temptable.tableNumber,class : temptable.class,userName : temptable.userName},(err,ledger)=>{
-                                    console.log(ledger)
+                            BillLedger.findOne({tableNumber : temptable.tableNumber,class : temptable.class,userName : temptable.userName,status:'Pending'},(err,ledger)=>{
                                     if(ledger!=null){
                                             ledger.orderItems = temptable.orderItems,
                                             ledger.billAmount = temptable.billAmount,
@@ -363,7 +377,31 @@ function payBill(req,res){
 function getAllReceipe(req,res){
     console.log("API hit to get all receipe method")
     try{
-        Receipe.find(function (err, receipe){
+        Receipe.find({},function (err, receipe){
+            if(!receipe){
+              res.status(201).json({
+                  success:false,
+                  message:"No Receipes"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:receipe
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
+function getAllAvailableReceipe(req,res){
+    console.log("API hit to get all available receipe method")
+    try{
+        Receipe.find({receipeAvailablity:true},function (err, receipe){
             if(!receipe){
               res.status(201).json({
                   success:false,
@@ -410,6 +448,30 @@ function deleteReceipe(req,res){
     }
 }
 
+function getAllBillLedgerDetails(req,res){
+    console.log("API hit to get all bill ledgers method")
+    try{
+        BillLedger.find(function (err, billledgers){
+            if(!billledgers){
+              res.status(201).json({
+                  success:false,
+                  message:"No Bill ledgers found"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:billledgers
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
 module.exports = {
     addReceipe,
     addReceipeToBill,
@@ -421,4 +483,6 @@ module.exports = {
     payBill,
     getAllReceipe,
     deleteReceipe,
+    getAllAvailableReceipe,
+    getAllBillLedgerDetails,
 }
