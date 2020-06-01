@@ -33,11 +33,11 @@ function bookRoom(req,res){
                             checkOutDate : req.body.expectedCheckOutDate,
                             status : 'Not Vacated'
                         })
-                        roomledger.save((err,docs=>{
+                        roomledger.save((err,docs)=>{
                             if(err){
                                 res.status(201).send({
-                                    success: true,
-                                    message: 'Room Booked.Ledger Entry not made.'
+                                    success: false,
+                                    message: err
                                 })
                             }else{
                                 res.status(200).send({
@@ -45,7 +45,7 @@ function bookRoom(req,res){
                                     message: 'Room Successfully Booked with Ledger Entry.'
                                 })
                             }
-                        }))
+                        })
                     } else {
                         res.status(201).send({
                             success: false,
@@ -77,7 +77,7 @@ function vacateRoom(req,res){
                 if(!err){
                     var today = new Date();
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    RoomLedger.updateOne({roomId:req.params.roomid,checkInDate:req.params.date,firstName:req.params.name},{
+                    RoomLedger.updateOne({roomId:req.params.roomid,checkInDate:req.params.date,firstName:req.params.name,status : 'Not Vacated'},{
                         $set:{
                             status : 'Vacated',
                             checkOutDate : date,
@@ -88,7 +88,7 @@ function vacateRoom(req,res){
                                     message: 'Room Vacated Successfully '
                                 })
                             }else{
-                                res.status(200).send({
+                                res.status(201).send({
                                     success: true,
                                     message: 'Room Vacated without Ledger Entry'
                                 })
