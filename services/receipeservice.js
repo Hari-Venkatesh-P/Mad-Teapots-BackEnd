@@ -104,6 +104,31 @@ function getAllTable(req,res){
     }
 }
 
+
+function getOrderDetailsByTableId(req,res){
+    console.log("API hit to find table method")
+    try{
+        GuestBill.findOne({_id:req.params.id},function (err, orderItemDocs){
+            if(!orderItemDocs){
+              res.status(201).json({
+                  success:false,
+                  message:"No Orders found for this table"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:orderItemDocs
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
 function getTableById(req,res){
     console.log("API hit to find table by id method")
     try{
@@ -472,11 +497,37 @@ function getAllBillLedgerDetails(req,res){
     }
 }
 
+function getBillLedgerDetailsById(req,res){
+    console.log("API hit to get BillLedger Details By Id method")
+    try{
+        BillLedger.findOne({_id:req.params.id},function (err, billledgers){
+            if(!billledgers){
+              res.status(201).json({
+                  success:false,
+                  message:"No Bill ledgers found"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:billledgers
+                })
+            }
+        })
+    }catch(error){
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
 module.exports = {
     addReceipe,
     addReceipeToBill,
     addTable,
     getAllTable,
+    getOrderDetailsByTableId,
     getTableById,
     receipeAvailablityToogle,
     registerGuest,
@@ -485,4 +536,5 @@ module.exports = {
     deleteReceipe,
     getAllAvailableReceipe,
     getAllBillLedgerDetails,
+    getBillLedgerDetailsById,
 }
