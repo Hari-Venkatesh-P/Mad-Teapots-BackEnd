@@ -16,5 +16,5 @@ router.post("/deletereceipebyid",ReceipeService.deleteReceipe)
 router.get("/getallavailablereceipes",ReceipeService.getAllAvailableReceipe)
 router.get("/getallbillledgers",ReceipeService.getAllBillLedgerDetails)
 router.get("/getbillledgerbyid/:id",ReceipeService.getBillLedgerDetailsById)
-
+router.get("/getreceipebyid/:id",ReceipeService.getReceipeById)
 module.exports = router;

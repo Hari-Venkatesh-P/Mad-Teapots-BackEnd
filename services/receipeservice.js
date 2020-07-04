@@ -522,6 +522,30 @@ function getBillLedgerDetailsById(req,res){
     }
 }
 
+function getReceipeById(req,res){
+    console.log("API hit to get all receipe method")
+    try{
+        Receipe.findOne({_id:req.params.id},function (err, receipe){
+            if(!receipe || err){
+              res.status(201).json({
+                  success:false,
+                  message:"No Receipes"
+              })
+            }else{
+                res.status(200).json({
+                    success:true,
+                    message:receipe
+                })
+            }
+        })
+    }catch(error){
+        res.status(500).json({
+            success:false,
+            message:error
+        })
+    }
+}
+
 module.exports = {
     addReceipe,
     addReceipeToBill,
@@ -533,6 +557,7 @@ module.exports = {
     registerGuest,
     payBill,
     getAllReceipe,
+    getReceipeById,
     deleteReceipe,
     getAllAvailableReceipe,
     getAllBillLedgerDetails,
