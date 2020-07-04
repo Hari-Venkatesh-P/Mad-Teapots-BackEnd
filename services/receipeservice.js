@@ -57,6 +57,7 @@ function addTable(req,res){
                 })
                 guestBill.save((err,docs)=>{
                     if(err){
+                        console.log(err)
                         res.status(201).send({
                             success: false,
                             message: 'Error in creating the table.'
@@ -318,6 +319,7 @@ function registerGuest(req,res){
                              }
                          })
                     }else{
+                        console.log(err)
                         res.status(201).json({
                             success:false,
                             message:"Cannot Register the table  to the Guest"
